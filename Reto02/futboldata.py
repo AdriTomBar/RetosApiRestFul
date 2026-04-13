@@ -4,22 +4,22 @@ class FutbolData:
 
     #Propiedades que almacenarán todos los datos
     partidos=[]
-    filePartidos = None
+    filepartidos = None
 
     def __init__(self):
         #Carga de los ficheros de datos de prueba
-        self.filePartidos=open('data/futboldata.json')
-        self.partidos = json.load(self.filePartidos)
-        self.filePartidos.close()
+        self.filepartidos=open('data/futboldata.json')
+        self.partidos = json.load(self.filepartidos)
+        self.filepartidos.close()
 
-#Partidos
-    #Devolucion asincrona de datos de aPartidos
+#partidos
+    #Devolucion asincrona de datos de apartidos
     async def get_partidos(self,skip,total):
         return {'partidos':self.partidos['partidos'][skip:(total+skip)]}
-    async def get_allIPartidos(self):
+    async def get_allIpartidos(self):
         return self.partidos
 
-    # Devolucion asincrona de Partidos de un equipo en concreto
+    # Devolucion asincrona de partidos de un equipo en concreto
     async def get_partidosEquipo(self,equipo: str):
         # si no se encuentra el alimento se devolverá el nulo en vez de un objeto JSON
         partidos=[]
@@ -37,33 +37,33 @@ class FutbolData:
         # si no se encuentra el alimento se devolverá el nulo en vez de un objeto JSON
         partido=None
         #Recorremos todos los datos JSON
-        for item in self.Partidos['Partidos']:
+        for item in self.partidos['partidos']:
             #Comparamos el id que es int
             if item['id']==partido_id:
                 partido=item
                 break
         return partido
 
-    async def write_partido(self, partido: Partido):
-        self.filePartidos=open('data/futboldata.json','w')
+    async def write_partido(self, partido: partidos):
+        self.filepartidos=open('data/futboldata.json','w')
         #Conseguimos el último id de la lista
         ultimo_partido=self.partidos['partidos'][-1]['id']
         #Añadimos un nuevo id al partido nuevo
         partidoDict=partido.model_dump()
         partidoDict['id']=ultimo_partido+1
         self.partidos['partidos'].append(partidoDict)
-        json.dump(self.Partidos,self.filePartidos,indent=2)
-        self.filePartidos.close()
+        json.dump(self.partidos,self.filepartidos,indent=2)
+        self.filepartidos.close()
         return partidoDict
     
     # Recibimos y actualizamos un nuevo partido
-    async def update_partido(self, partido_id: int, partido: Partido):
-        self.filePartidos=open('data/futboldata.json','w')
+    async def update_partido(self, partido_id: int, partido: partidos):
+        self.filepartidos=open('data/futboldata.json','w')
         #Buscamos el partido
         partidoEncontrado=None
         partidoPos=0
         #Recorremos todos los datos JSON
-        for item in self.Partidos['partidos']:
+        for item in self.partidos['partidos']:
             #Comparamos el id que es int
             if item['id']==partido_id:
                 partidoEncontrado=item
@@ -76,16 +76,16 @@ class FutbolData:
             for elem in partidoDict:
                 if(partidoDict[elem]):
                 #cambiamos el valor
-                    self.Partidos['partidos'][partidoPos][elem]=partidoDict[elem]
-            json.dump(self.partidos,self.filePartidos,indent=2)
-            self.filePartidos.close()
+                    self.partidos['partidos'][partidoPos][elem]=partidoDict[elem]
+            json.dump(self.partidos,self.filepartidos,indent=2)
+            self.filepartidos.close()
             return self.partidos['partidos'][partidoPos]
         else:
             return None
 
     # Borramos un ingrediente
     async def delete_partido(self, partido_id: int):
-        self.filePartidos=open('data/futboldata.json','w')
+        self.filepartidos=open('data/futboldata.json','w')
         #Buscamos el partido
         partidoEncontrado=None
         partidoPos=0
@@ -99,8 +99,8 @@ class FutbolData:
         #Si se ha encontrado
         if(partidoEncontrado):
             self.partidos['partidos'].pop(partidoPos)
-            json.dump(self.partidos,self.filePartidos,indent=2)
-            self.filePartidos.close()
+            json.dump(self.partidos,self.filepartidos,indent=2)
+            self.filepartidos.close()
             return {"info":"borrado partido "+str(partido_id)}
         else:
             return None
