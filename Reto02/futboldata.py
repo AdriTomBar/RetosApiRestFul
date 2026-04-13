@@ -44,7 +44,7 @@ class FutbolData:
                 break
         return partido
 
-    async def write_partido(self, partido: partidos):
+    async def write_partido(self, partido: dict):
         self.filepartidos=open('data/futboldata.json','w')
         #Conseguimos el último id de la lista
         ultimo_partido=self.partidos['partidos'][-1]['id']
@@ -57,7 +57,7 @@ class FutbolData:
         return partidoDict
     
     # Recibimos y actualizamos un nuevo partido
-    async def update_partido(self, partido_id: int, partido: partidos):
+    async def update_partido(self, partido_id: int, partido: dict):
         self.filepartidos=open('data/futboldata.json','w')
         #Buscamos el partido
         partidoEncontrado=None

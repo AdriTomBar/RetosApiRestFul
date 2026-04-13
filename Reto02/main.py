@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 
 from futboldata import FutbolData
 
@@ -19,8 +20,8 @@ app = FastAPI(
 )
 
 class Partido(BaseModel):
-    id : int
-    anyio : int
+    id: Optional[int] = None
+    anyo : int
     fase: str
     equipolocal: str
     goleslocales: int
@@ -36,19 +37,21 @@ async def get_partidos(total: int = 10, skip: int = 0):
 
 @app.get("/todospartidos")
 async def get_todospartidos():
-    return await futbol.get_allIPartidos()
+    return await futbol.get_allIpartidos()
 
 @app.get("/partidos/{partido_id}")
 async def get_partido(partido_id: int):
-    return await futbol.get_partido(partido_id)
+    partido = await futbol.get_partido(partido_id)
+    if partido is None:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+    return partido
 
 @app.get("/partidosequipo/{equipo_id}")
 async def get_partidoequipo(equipo_id: str):
-    return await futbol.get_partidoequipo(equipo_id)
-
-@app.post("/partidos")
-async def get_partidoequipo(equipo_id: str):
-    return await futbol.get_partidoequipo(equipo_id)
+    partidos = await futbol.get_partidosEquipo(equipo_id)
+    if not partidos:
+        raise HTTPException(status_code=404, detail="No se encontraron partidos para el equipo")
+    return partidos
 
 @app.post("/partidos")
 async def write_partido(partido: Partido):
@@ -56,10 +59,16 @@ async def write_partido(partido: Partido):
 
 @app.put("/partidos/{partido_id}")
 async def update_partido(partido_id: int, partido: Partido):
-    return await futbol.update_partido(partido_id, partido)
+    partido_actualizado = await futbol.update_partido(partido_id, partido)
+    if partido_actualizado is None:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+    return partido_actualizado
 
 @app.delete("/partidos/{partido_id}")
 async def delete_partido(partido_id: int):
-    return await futbol.delete_partido(partido_id)
+    partido_eliminado = await futbol.delete_partido(partido_id)
+    if partido_eliminado is None:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+    return partido_eliminado
 
 
